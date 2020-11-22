@@ -3,6 +3,7 @@ export type columnsType = {
     Footer: 'Id' | 'First Name' | 'Last Name' | 'Date of Birth' | 'Country' | 'Phone'
     accessor: 'id' | 'first_name' | 'last_name' | 'date_of_birth' | 'country' | 'phone'
     Cell?: ({ value }: { value: any; }) => string
+    disableFilters?: boolean
 }
 
 export type columnsGroupedType = columnsType | {
@@ -21,3 +22,10 @@ export type mockDataType = Array<{
     country: string
     phone: string
 }>
+
+export type columnFilterPropsType = {
+    column: {
+        filterValue: string
+        setFilter: (value: string) => void
+    }
+}
