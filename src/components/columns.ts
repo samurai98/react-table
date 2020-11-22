@@ -1,4 +1,5 @@
-import {columnsGroupedType, columnsType } from "../types/entities";
+import {columnsGroupedType, columnsType } from '../types/entities'
+import {format} from 'date-fns'
 
 export const COLUMNS: Array<columnsType> = [
     {
@@ -19,7 +20,8 @@ export const COLUMNS: Array<columnsType> = [
     {
         Header: 'Date of Birth',
         Footer: 'Date of Birth',
-        accessor: 'date_of_birth'
+        accessor: 'date_of_birth',
+        Cell: ({value}) => {return format(new Date(value), 'dd/MM/yyyy')}
     },
     {
         Header: 'Country',
