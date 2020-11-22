@@ -1,13 +1,13 @@
 import React, {useMemo} from 'react'
 import {useTable} from 'react-table'
 import MOCK_DATA from './MOCK_DATA.json'
-import {COLUMNS} from './columns'
-import {columnsType, mockDataType} from '../types/entities'
+import {COLUMNS, GROUPED_COLUMNS} from './columns'
+import {columnsType, columnsGroupedType, mockDataType} from '../types/entities'
 import './table.css'
 
 export const BasicTable = () => {
 
-    const columns: columnsType = useMemo(() => COLUMNS, [])
+    const columns: Array<columnsGroupedType> = useMemo(() => GROUPED_COLUMNS, [])
     const data: mockDataType = useMemo(() => MOCK_DATA, [])
 
     const tableInstance = useTable({
@@ -19,6 +19,7 @@ export const BasicTable = () => {
         getTableProps,
         getTableBodyProps,
         headerGroups,
+        footerGroups,
         rows,
         prepareRow
     } = tableInstance
@@ -54,6 +55,21 @@ export const BasicTable = () => {
                 })
             }
             </tbody>
+            <tfoot>
+            {
+                footerGroups.map(footerGroup => (
+                    <tr {...footerGroup.getFooterGroupProps()}>
+                        {
+                            footerGroup.headers.map(column => (
+                                <td {...column.getFooterProps()}>
+                                    {column.render('Footer')}
+                                </td>
+                            ))
+                        }
+                    </tr>
+                ))
+            }
+            </tfoot>
         </table>
     )
 }
