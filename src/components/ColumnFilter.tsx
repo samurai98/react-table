@@ -1,5 +1,11 @@
 import React from 'react'
-import {columnFilterPropsType} from '../types/entities'
+
+export type columnFilterPropsType = {
+    column: {
+        filterValue: string
+        setFilter: (value: string) => void
+    }
+}
 
 export const ColumnFilter = ({column}: columnFilterPropsType) => {
     const {filterValue, setFilter} = column

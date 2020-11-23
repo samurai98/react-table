@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react'
-import {useTable, useSortBy, useGlobalFilter, useFilters} from 'react-table'
+import {useTable, useSortBy, useGlobalFilter, useFilters, usePagination} from 'react-table'
 import MOCK_DATA from './MOCK_DATA.json'
 import {COLUMNS, GROUPED_COLUMNS} from './columns'
 import {columnsType, columnsGroupedType, mockDataType} from '../types/entities'
@@ -7,9 +7,9 @@ import './table.css'
 import {GlobalFilter} from './GlobalFilter'
 import {ColumnFilter, columnFilterPropsType} from './ColumnFilter'
 
-export const FilteringTable = () => {
+export const PaginationTable = () => {
 
-    type defaultColumnType = { Filter: ({ column }: columnFilterPropsType) => JSX.Element; }
+    type defaultColumnType = { Filter: ({column}: columnFilterPropsType) => JSX.Element; }
 
     const columns: Array<columnsGroupedType> = useMemo(() => GROUPED_COLUMNS, [])
     const data: mockDataType = useMemo(() => MOCK_DATA, [])
@@ -25,7 +25,15 @@ export const FilteringTable = () => {
         getTableBodyProps,
         headerGroups,
         footerGroups,
-        rows,
+        page,
+        nextPage,
+        previousPage,
+        canNextPage,
+        canPreviousPage,
+        pageOptions,
+        gotoPage,
+        pageCount,
+        setPageSize,
         prepareRow,
         state,
         setGlobalFilter
@@ -36,9 +44,10 @@ export const FilteringTable = () => {
         },
         useFilters,
         useGlobalFilter,
-        useSortBy)
+        useSortBy,
+        usePagination)
 
-    const {globalFilter} = state
+    const {globalFilter, pageIndex, pageSize} = state
 
     return (
         <>
@@ -62,7 +71,7 @@ export const FilteringTable = () => {
                 </thead>
                 <tbody {...getTableBodyProps()}>
                 {
-                    rows.map((row: any) => {
+                    page.map((row: any) => {
                         prepareRow(row)
                         return (
                             <tr {...row.getRowProps()}>
@@ -91,6 +100,36 @@ export const FilteringTable = () => {
                 }
                 </tfoot>
             </table>
+            <div>
+                <span>
+                    Page{' '}
+                    <strong>
+                        {pageIndex + 1} of {pageOptions.length}
+                    </strong>{' '}
+                </span>
+                <span>
+                    | Go to page: {' '}
+                    <input type="number" defaultValue={pageIndex + 1}
+                           onChange={e => {
+                               const pageNumber = e.target.value ? Number(e.target.value) - 1 : 0
+                               gotoPage(pageNumber)
+                           }}
+                           style={{width: '50px'}}/>
+                </span>
+                <select value={pageSize} onChange={e => setPageSize(Number(e.target.value))}>
+                    {
+                        [10, 25, 50].map(pageSize => (
+                            <option key={pageSize} value={pageSize}>
+                                Show {pageSize}
+                            </option>
+                        ))
+                    }
+                </select>
+                <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>{'<<'}</button>
+                <button onClick={() => previousPage()} disabled={!canPreviousPage}>Previous</button>
+                <button onClick={() => nextPage()} disabled={!canNextPage}>Next</button>
+                <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>{'>>'}</button>
+            </div>
         </>
     )
 }

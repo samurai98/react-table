@@ -22,10 +22,3 @@ export type mockDataType = Array<{
     country: string
     phone: string
 }>
-
-export type columnFilterPropsType = {
-    column: {
-        filterValue: string
-        setFilter: (value: string) => void
-    }
-}
