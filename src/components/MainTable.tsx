@@ -4,14 +4,14 @@ import {
     useFilters, usePagination, useRowSelect
 } from 'react-table'
 import MOCK_DATA from './MOCK_DATA.json'
-import {COLUMNS, GROUPED_COLUMNS} from './columns'
-import {columnsType, columnsGroupedType, mockDataType} from '../types/entities'
+import {GROUPED_COLUMNS} from './columns'
+import {columnsGroupedType, mockDataType} from '../types/entities'
 import './table.css'
 import {GlobalFilter} from './GlobalFilter'
 import {ColumnFilter, columnFilterPropsType} from './ColumnFilter'
 import {Checkbox} from './Checkbox'
 
-export const ColumnHiding = () => {
+export const MainTable = () => {
 
     type defaultColumnType = { Filter: ({column}: columnFilterPropsType) => JSX.Element; }
 
@@ -74,24 +74,25 @@ export const ColumnHiding = () => {
 
     const {globalFilter, pageIndex, pageSize} = state
 
-    const firstPageRows = rows.slice(0, 10)
-
     return (
         <>
-            <div>
+            <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter}/>
+
+            <div className={'toggleVisibilityColumns'}>
+                Show columns:
                 <div>
-                    <Checkbox {...getToggleHideAllColumnsProps()} /> Toggle All
+                    <Checkbox {...getToggleHideAllColumnsProps()} /> All columns
                 </div>
                 {allColumns.map((column: any) => (
                     <div key={column.id}>
                         <label>
                             <input type="checkbox" {...column.getToggleHiddenProps()}/>
-                            {column.Header}
+                            {column.id === 'selection' ? 'selection' : column.Header}
                         </label>
                     </div>
                 ))}
             </div>
-            <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter}/>
+
             <table {...getTableProps()}>
                 <thead>
                 {headerGroups.map((headerGroup: any) => (
@@ -109,8 +110,9 @@ export const ColumnHiding = () => {
                     </tr>
                 ))}
                 </thead>
+
                 <tbody {...getTableBodyProps()}>
-                {firstPageRows.map((row: any) => {
+                {page.map((row: any) => {
                     prepareRow(row)
                     return (
                         <tr {...row.getRowProps()}>
@@ -122,6 +124,7 @@ export const ColumnHiding = () => {
                     )
                 })}
                 </tbody>
+
                 <tfoot>
                 {
                     footerGroups.map((footerGroup: any) => (
@@ -138,36 +141,38 @@ export const ColumnHiding = () => {
                 }
                 </tfoot>
             </table>
-            <div>
+
+            <div className={'pagination'}>
                 <span>
                     Page{' '}
                     <strong>
                         {pageIndex + 1} of {pageOptions.length}
-                    </strong>{' '}
-                </span>
-                <span>
-                    | Go to page: {' '}
-                    <input type="number" defaultValue={pageIndex + 1}
+                    </strong>{' '}|{' '}
+                    Go to page: {' '}
+                    <input type="number" min={1} max={pageOptions.length}
+                           value={pageIndex + 1}
                            onChange={e => {
                                const pageNumber = e.target.value ? Number(e.target.value) - 1 : 0
                                gotoPage(pageNumber)
-                           }}
-                           style={{width: '50px'}}/>
+                           }}/>
                 </span>
+
+                <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>❮❮ First</button>
+                <button onClick={() => previousPage()} disabled={!canPreviousPage}>❮ Previous</button>
+                <button onClick={() => nextPage()} disabled={!canNextPage}>Next ❯</button>
+                <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>Last ❯❯</button>
+
                 <select value={pageSize} onChange={e => setPageSize(Number(e.target.value))}>
                     {
                         [10, 25, 50].map(pageSize => (
                             <option key={pageSize} value={pageSize}>
-                                Show {pageSize}
+                                Show {pageSize} rows
                             </option>
                         ))
                     }
                 </select>
-                <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>{'<<'}</button>
-                <button onClick={() => previousPage()} disabled={!canPreviousPage}>Previous</button>
-                <button onClick={() => nextPage()} disabled={!canNextPage}>Next</button>
-                <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>{'>>'}</button>
             </div>
+
             <pre>
                 <code>
                     {JSON.stringify(
