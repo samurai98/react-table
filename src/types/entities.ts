@@ -2,7 +2,7 @@ export type columnsType = {
     Header: 'Id' | 'First Name' | 'Last Name' | 'Date of Birth' | 'Country' | 'Phone'
     Footer: 'Id' | 'First Name' | 'Last Name' | 'Date of Birth' | 'Country' | 'Phone'
     accessor: 'id' | 'first_name' | 'last_name' | 'date_of_birth' | 'country' | 'phone'
-    Cell?: ({ value }: { value: any; }) => string
+    Cell?: ({value}: { value: any; }) => string
     disableFilters?: boolean
 }
 
@@ -12,7 +12,7 @@ export type columnsGroupedType = columnsType | {
     columns: Array<columnsType>
 }
 
-export type mockDataType = Array<{
+export type mockDataType = {
     id: number
     first_name: string
     last_name: string
@@ -21,4 +21,4 @@ export type mockDataType = Array<{
     age: number
     country: string
     phone: string
-}>
+}
